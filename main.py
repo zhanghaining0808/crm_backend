@@ -1,0 +1,34 @@
+import os
+from fastapi import FastAPI
+import uvicorn
+
+from crm_backend.db.db import create_db_and_tables
+from loguru import logger
+
+from crm_backend.utils.config import load_config
+from crm_backend.utils.logger import init_logger
+
+app = FastAPI()
+
+
+# 在启动时创建数据库表
+@app.on_event("startup")
+def on_startup():
+    logger.info("服务启动成功")
+    logger.info("开始初始化数据表...")
+    create_db_and_tables()
+    logger.info("数据表初始化成功")
+
+
+if __name__ == "__main__":
+    config = load_config()
+    init_logger(config=config)
+    logger.info(f"{8*'*'} Apexlegend WEB Backend {8*'*'}")
+    logger.info("启动服务中...")
+    print(os.environ["HOSTNAME"])
+    print(config.HOSTNAME)
+    uvicorn.run(
+        "main:app",
+        host=config.HOSTNAME,
+        port=config.PORT,
+    )

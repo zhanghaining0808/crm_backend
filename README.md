@@ -17,18 +17,11 @@
 - datetime created_at (创建时间)
 - datetime updated_at (更新客户时间)
 
-# email(邮件)
-- int id
-- int user_id
-- int customer_id
-- str title (主题)
-- str content (内容)
-- datetime created_at
 
-# email task(邮件任务)
+# Campaign(推广任务)
 - int id
-- list[int] customer_ids(客户id)
-- bool status (状态)
+- str name
+- str tags
 - bool is_success(完成情况)
 - datetime created_at
 

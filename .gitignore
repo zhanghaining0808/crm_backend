@@ -1,0 +1,20 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# 环境变量文件默认不上传，因为考虑不同因素
+# 只保留环境变量模板文件，供复制修改使用
+.env
+
+# 日志文件
+logs/
+
+# 数据库文件
+*.db

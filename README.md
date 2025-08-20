@@ -1,17 +1,18 @@
 # user (用户)
 - int id
-- str name (普通用户)
+- str name (用户名称)
+- str email (邮箱)
+- str phone (电话)
 - str passwd (用户密码)
-- bool is_admin (管理员)
+- is_active (是否激活)
+- is_admin (是否为管理员)
 - datetime created_at 
 - datetime updated_at
-- datetime last_login (最后登录时间)
-
+- datetime last_login 
 # customer(客户)
 - int id
 - str name
 - str email
-- bool is_email_black(黑名单)
 - list[str] tags (客户标签)
 - datetime created_at (创建时间)
 - datetime updated_at (更新客户时间)

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List
 from pydantic import BaseModel
 from sqlmodel import Field, SQLModel
 
@@ -10,28 +10,20 @@ from sqlmodel import Field, SQLModel
 class UserBase(SQLModel):
     name: str = Field(max_length=20, unique=True, description="用户名称", index=True)
     email: str = Field(max_length=255, unique=True, description="邮箱", index=True)
-    phone: Optional[str] = Field(
-        max_length=20, default=None, description="电话", index=True
-    )
+    phone: str = Field(max_length=20, default=None, description="电话", index=True)
     passwd: str = Field(max_length=128, description="密码")
 
 
 class User(UserBase, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+    id: int = Field(default=None, primary_key=True)
 
 
 class UserPublic(UserBase):
     is_active: bool = Field(default=True, description="是否激活", index=True)
     is_admin: bool = Field(default=False, description="是否为管理员", index=True)
-    created_at: Optional[datetime] = Field(
-        default=None, description="创建时间", index=True
-    )
-    updated_at: Optional[datetime] = Field(
-        default=None, description="更新时间", index=True
-    )
-    last_login: Optional[datetime] = Field(
-        default=None, description="最后登录", index=True
-    )
+    created_at: datetime = Field(default=None, description="创建时间", index=True)
+    updated_at: datetime = Field(default=None, description="更新时间", index=True)
+    last_login: datetime = Field(default=None, description="最后登录", index=True)
 
 
 class UserUpdate(UserBase):

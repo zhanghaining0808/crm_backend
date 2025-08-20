@@ -17,5 +17,5 @@ wheels/
 logs/
 
 # 数据库文件
-*.db
+.db
 

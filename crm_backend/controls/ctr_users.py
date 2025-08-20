@@ -1,6 +1,6 @@
 from datetime import timedelta
 from sqlmodel import select
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
 from crm_backend.db.db import SessionDep
 from crm_backend.middleware.request_loger import request_logger_M

@@ -12,7 +12,7 @@ from crm_backend.utils.jwt import jwt_decode, jwt_encode
 from crm_backend.utils.security import get_passwd_hash, verify_passwd
 
 
-user_router = APIRouter(prefix="/api/users", dependencies=[Depends(request_logger_M)])
+user_router = APIRouter(prefix="/users", dependencies=[Depends(request_logger_M)])
 
 
 @user_router.post("/add", response_model=CrmResponse)
@@ -133,6 +133,7 @@ async def login(user: User, session: SessionDep):
     token = jwt_encode(
         {
             "user_id": find_user.id,
+            "user_email": find_user.email,
             "username": find_user.name,
             "is_admin": find_user.is_admin,
         },

@@ -1,5 +1,5 @@
 from datetime import timedelta
-from typing import Annotated, List
+from typing import List
 from fastapi import APIRouter, Depends, Query, Request
 from sqlmodel import select
 from crm_backend.db.db import SessionDep
@@ -12,13 +12,16 @@ from crm_backend.utils.jwt import jwt_encode
 
 
 customer_router = APIRouter(
-    prefix="/api/customers",
+    prefix="/customers",
     dependencies=[Depends(request_logger_M), Depends(check_auth_M)],
 )
 
 
 # 创建客户(单个客户添加,可同时设置多个标签)
-@customer_router.post("/add", response_model=CrmResponse)
+@customer_router.post(
+    "/add",
+    response_model=CrmResponse,
+)
 def create_customer(request: Request, customer: Customer, session: SessionDep):
     find_customer = session.exec(
         select(Customer).where(customer.name == Customer.name)
@@ -31,19 +34,17 @@ def create_customer(request: Request, customer: Customer, session: SessionDep):
     session.add(customer)
     session.commit()
     session.refresh(customer)
-    token = jwt_encode({"customername": customer.name}, timedelta(days=1))
-    return CrmResponse(
-        data={"customer": customer, "access_token": token}, msg="创建用户成功"
-    )
+    return CrmResponse(data={"customer": customer}, msg="创建用户成功")
 
 
 # 客户列表展示(支持分页,搜索,按标签筛选)
 @customer_router.get("/query", response_model=CrmResponse)
+@customer_router.post("/query", response_model=CrmResponse)
 def read_all_customers(
     request: Request,
     session: SessionDep,
-    offset: int = Query(0, ge=0, description="偏移量（从0开始）"),
-    limit: int = Query(10, ge=1, le=100, description="每页数量（1-100）"),
+    offset: int = Query(0, ge=0, description="偏移量(从0开始)"),
+    limit: int = Query(10, ge=1, le=100, description="每页数量(1-100)"),
     tags: List[str] = Query(default=[], description="标签筛选"),
 ):
     customers = session.exec(select(Customer).offset(offset).limit(limit)).all()
@@ -86,7 +87,7 @@ def update_customer(
 ):
     find_customer = session.get(Customer, customer_id)
     need_update_customer = customer_update_req.update_Customer.model_dump()
-    if not find_customer:
+    if not need_update_customer:
         raise CrmHTTPException(status_code=404, detail="客户新数据未找到!")
     if not find_customer:
         raise CrmHTTPException(status_code=404, detail="客户旧数据未找到!")

@@ -20,6 +20,7 @@ def check_auth_M(request: Request):
         raise CrmHTTPException(status_code=400, detail="授权token解析失败, 拒绝访问!!!")
 
     request.state.user_id = decodedata.get("user_id", None)
+    request.state.user_email = decodedata.get("user_email", None)
     request.state.username = decodedata.get("username", None)
     request.state.is_admin = decodedata.get("is_admin", False)
 

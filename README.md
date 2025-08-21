@@ -18,7 +18,7 @@
 - datetime updated_at (更新客户时间)
 
 
-# Campaign(推广任务)
+# Email_task(推广任务)
 - int id
 - str name
 - str tags

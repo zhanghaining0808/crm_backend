@@ -3,6 +3,7 @@ from fastapi import FastAPI
 import uvicorn
 from crm_backend.controls.ctr_users import user_router
 from crm_backend.controls.ctr_customers import customer_router
+from crm_backend.controls.ctr_email_task import email_router
 from crm_backend.db.db import create_db_and_tables
 from loguru import logger
 
@@ -11,8 +12,9 @@ from crm_backend.utils.logger import init_logger
 
 app = FastAPI()
 
-app.include_router(user_router)
-app.include_router(customer_router)
+app.include_router(prefix="/api", router=user_router)
+app.include_router(prefix="/api", router=customer_router)
+app.include_router(prefix="/api", router=email_router)
 
 
 # 在启动时创建数据库表
@@ -27,7 +29,7 @@ def on_startup():
 if __name__ == "__main__":
     config = load_config()
     init_logger(config=config)
-    logger.info(f"{8*'*'} Apexlegend WEB Backend {8*'*'}")
+    logger.info(f"{8*'*'} CRM WEB Backend {8*'*'}")
     logger.info("启动服务中...")
     print(os.environ["HOSTNAME"])
     print(config.HOSTNAME)

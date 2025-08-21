@@ -16,6 +16,7 @@ class UserBase(SQLModel):
 class User(UserBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     passwd: str = Field(max_length=128, description="密码")
+    email: str = Field(max_length=255, unique=True, description="邮箱", index=True)
     is_active: bool = Field(default=True, description="是否激活", index=True)
     is_admin: bool = Field(default=False, description="是否为管理员", index=True)
     created_at: datetime = Field(

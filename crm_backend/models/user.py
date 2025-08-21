@@ -30,6 +30,7 @@ class User(UserBase, table=True):
     )
 
 
+# TODO 调整名称
 class UserPublic(UserBase):
     id: int
     name: str

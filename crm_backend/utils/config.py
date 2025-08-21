@@ -6,6 +6,7 @@ from pydantic import BaseModel
 class Config(BaseModel):
     HOSTNAME: str
     PORT: int
+    JWT_KEY: str
     SQLITE_FILE_NAME: str
     LOG_CONSOLE_LEVEL: str
     LOG_CONSOLE_FORMAT: str

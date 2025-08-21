@@ -75,7 +75,7 @@ class EmailTaskExecer:
         is_success = await self.send_email(
             email.subject,
             email.body,
-            task.send_to,
+            task.send_by,
             task.send_to,
         )
         if is_success:

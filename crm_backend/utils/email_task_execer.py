@@ -2,6 +2,9 @@ import asyncio
 import random
 import threading
 from typing import List
+from crm_backend.db.db import engine
+from sqlmodel import Session
+from crm_backend.models.crm_http_exception import CrmHTTPException
 from crm_backend.models.email_task import EmailTask
 from loguru import logger
 
@@ -30,6 +33,8 @@ class EmailTaskExecer:
         self.task_list: List[EmailTask] = task_list  # 待执行的任务列表
         self._loop = None
         self._thread = None
+        # 获取数据库会话，用于操作数据库数据
+        self._session = Session(engine)
         self._start_background_loop()
 
     def _start_background_loop(self):
@@ -42,6 +47,19 @@ class EmailTaskExecer:
 
         self._thread = threading.Thread(target=run_loop, daemon=True)
         self._thread.start()
+
+    def _update_task_status(self, task: EmailTask, new_status: str):
+        find_email_task = self._session.get(EmailTask, task.id)
+        if not find_email_task:
+            raise CrmHTTPException(
+                status_code=404,
+                detail=f"更新Task {task.id} - {task.name}失败，数据库没有该邮件任务",
+            )
+        new_task = find_email_task
+        new_task.status = new_status
+        find_email_task.sqlmodel_update(new_task)
+        self._session.commit()
+        self._session.refresh(find_email_task)
 
     def add_task(self, task: EmailTask):
         """
@@ -59,7 +77,7 @@ class EmailTaskExecer:
         await asyncio.sleep(2)  # 两秒后执行
         await self.execute()
 
-    async def execute(self) -> bool:
+    async def execute(self):
         # 这里可以添加任务执行的具体逻辑
         if not self.task_list:
             raise ValueError("任务列表为空，无法执行任务。")
@@ -70,6 +88,7 @@ class EmailTaskExecer:
         # 这里只是一个示例，实际执行逻辑需要根据业务需求来实现
         # 例如发送邮件
         logger.info(f"开始执行任务: {task.name}")
+        self._update_task_status(task, "发送中")
         # 这里可以调用发送邮件的函数
         email = task.get_email()
         is_success = await self.send_email(
@@ -80,10 +99,11 @@ class EmailTaskExecer:
         )
         if is_success:
             logger.info(f"任务 {task.name} 执行成功.")
+            self._update_task_status(task, "发送成功")
+
         else:
             logger.error(f"任务 {task.name} 执行失败!(网络问题，请稍后重试).")
-
-        return is_success
+            self._update_task_status(task, "发送失败")
 
     async def send_email(
         self, subject: str, body: str, send_by: str, send_to: str

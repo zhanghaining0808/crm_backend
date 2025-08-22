@@ -29,14 +29,14 @@ def create_email_task(request: Request, email_task: EmailTask, session: SessionD
     if not find_customer:
         raise CrmHTTPException(status_code=404, detail="客户不存在")
     if find_customer.is_blacklist:
-        raise CrmHTTPException(status_code=403, detail="客户是黑名单不允许发送文件")
+        raise CrmHTTPException(status_code=403, detail="客户在黑名单中，跳过邮件发送")
 
     email_task.send_by = request.state.user_email
     email_task.send_to = find_customer.email
     session.add(email_task)
     session.commit()
     session.refresh(email_task)
-    email_task_execer.add_task(email_task)  # 添加任务到执行器
+    email_task_execer.add_task(email_task)  # 添加任务到执行器并开始排队等待执行
     return CrmResponse(data={"email_task": email_task}, msg="邮件任务创建成功")
 
 

@@ -45,3 +45,6 @@ class CustomerUpdate(CustomerBase):
 class CustomerUpdateReq(BaseModel):
     update_key: List[str] = Field(description="需要更新的字段列表")
     update_Customer: CustomerUpdate = Field(description="需要更新的用户数据")
+
+
+# TODO 黑名单邮箱展示

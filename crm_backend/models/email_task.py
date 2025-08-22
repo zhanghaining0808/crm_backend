@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import Any, Dict, List, Optional
+from pydantic import BaseModel
 from sqlalchemy import JSON, Column
 from sqlmodel import Field, SQLModel
 
@@ -16,11 +17,11 @@ class EmailTask(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(max_length=100, description="推广任务名称")
     status: str = Field(
-        default="待执行", description="任务状态(待执行/发送中/发送成功/发送失败)"
+        default="待处理", description="任务状态(待处理/发送中/发送成功/发送失败)"
     )
     send_by: str = Field(description="用户邮箱")
     send_to: str = Field(
-        description="发送对象ID（可以是用户ID或其他标识, 实际在这里使用的是客户id）",
+        description="发送对象邮箱",
     )
     email: Dict[str, Any] = Field(
         sa_column=Column(JSON), description="邮件内容，包含主题和正文"
@@ -60,17 +61,11 @@ class CreateEmailTasks(SQLModel):
 
 
 class EmailTaskUpdate(SQLModel):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: Optional[str] = Field(
-        default=None, max_length=100, description="推广任务名称"
-    )
-    tags: Optional[List[str]] = Field(
-        sa_column=Column(JSON), default=None, description="标签列表"
-    )
-    status: str
-    send_at: datetime = Field(default_factory=datetime.utcnow, description="发送时间")
+    id: Optional[int] = None
+    name: Optional[str] = None
+    email: Optional[Email] = None
 
 
-class EmailTaskUpdateReq(SQLModel):
+class EmailTaskUpdateReq(BaseModel):
     update_key: List[str] = Field(description="需要更新的字段列表")
     update_EmailTask: EmailTaskUpdate = Field(description="需要更新的邮件任务数据")

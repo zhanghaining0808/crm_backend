@@ -20,14 +20,28 @@ def create_user(user: User, session: SessionDep):
     find_user = session.exec(select(User).where(user.name == User.name)).first()
     if find_user:
         raise CrmHTTPException(
-            status_code=404, detail="相同用户名称已存在, 请更换用户名!"
+            status_code=403, detail="相同用户名称已存在, 请更换用户名!"
         )
     user.passwd = get_passwd_hash(user.passwd)
 
     session.add(user)
     session.commit()
     session.refresh(user)
-    token = jwt_encode({"username": user.name}, timedelta(days=1))
+
+    find_user = session.exec(select(User).where(user.name == User.name)).first()
+
+    if not find_user:
+        raise CrmHTTPException(status_code=404, detail="用户不存在!")
+
+    token = jwt_encode(
+        {
+            "user_id": find_user.id,
+            "user_email": find_user.email,
+            "username": find_user.name,
+            "is_admin": find_user.is_admin,
+        },
+        timedelta(days=1),
+    )
     return CrmResponse(data={"user": user, "access_token": token}, msg="创建用户成功")
 
 
@@ -96,6 +110,7 @@ def update_user(
         if need_update_key in old_user.keys():
             new_user[need_update_key] = need_update_user[need_update_key]
 
+    new_user["passwd"] = get_passwd_hash(new_user["passwd"])
     find_user.sqlmodel_update(new_user)
     session.commit()
     session.refresh(find_user)

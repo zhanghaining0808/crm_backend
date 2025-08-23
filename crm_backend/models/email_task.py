@@ -46,17 +46,16 @@ class EmailTask(SQLModel, table=True):
         return Email(subject="", body="")
 
 
-class CreateEmailTasks(SQLModel):
+class BatchEmailTaskRequest(SQLModel):
     name: str = Field(max_length=100, description="推广任务名称")
-    send_by: int = Field(default=0, description="用户ID")
     email: Email = Field(description="邮件内容，包含主题和正文")
     send_customer_by_tags: Optional[List[str]] = Field(
         default=[],
         description="按客户标签决定批量发送给对应包含了该标签的客户",
     )
-    send_customer_by_ids: Optional[List[int]] = Field(
+    send_customer_by_emails: Optional[List[str]] = Field(
         default=[],
-        description="按客户ID决定批量发送给对应的客户",
+        description="按客户邮箱决定批量发送给对应的客户",
     )
 
 

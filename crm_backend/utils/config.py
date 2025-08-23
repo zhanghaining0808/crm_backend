@@ -13,6 +13,7 @@ class Config(BaseModel):
     LOG_FILE_LEVEL: str
     LOG_FILE_PATH: str
     LOG_FILE_FORMAT: str
+    INIT_SAMPLE_DATA: bool = True  # 是否初始化示例数据
 
 
 def load_config() -> Config:

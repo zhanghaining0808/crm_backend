@@ -22,6 +22,6 @@ def check_auth_M(request: Request):
     request.state.user_id = decodedata.get("user_id", None)
     request.state.user_email = decodedata.get("user_email", None)
     request.state.username = decodedata.get("username", None)
-    request.state.is_admin = decodedata.get("is_admin", False)
+    request.state.is_admin = decodedata.get("is_admin", None)
 
     return request
